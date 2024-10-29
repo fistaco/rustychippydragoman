@@ -11,7 +11,7 @@ pub struct Emulator {
 }
 
 pub impl Emulator {
-    fn new(screen_width: usize, screen_height: usize) -> Self {
+    fn new(screen_width: usize, screen_height: usize, instructions_per_second: u8) -> Self {
         Emulator {
             memory: [0; 4096],
             display: vec![vec![0; screen_width]; screen_height], // Access with display[row][col]
@@ -24,7 +24,38 @@ pub impl Emulator {
         }
     }
 
+    fn run(&mut self, refresh_rate: u8) {
+
+    }
+
+    /// Fetch the instruction at the current program counter
+    fn fetch_instruction(&self) -> u8 {
+        0
+    }
+
+    fn decode_instruction(&self, instruction: u8) -> u8{
+        0
+    }
+
+    fn execute_instruction(&mut self, instruction: u8) {
+        // TODO
+    }
+
     fn draw(&self) {
         // TODO: Implement drawing to screen
+    }
+
+    fn update_state(&mut self) {
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+        if self.sound_timer > 0 {
+            self.sound_timer -= 1;
+            self.beep();
+        }
+    }
+
+    fn beep(&self) {
+        // TODO: Implement sound output
     }
 }
