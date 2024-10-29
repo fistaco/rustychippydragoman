@@ -17,7 +17,7 @@ pub impl Emulator {
         Emulator {
             memory: [0; 4096],
             display: vec![vec![Rgb([0, 0, 0]); screen_width]; screen_height], // Access with display[row][col]
-            program_counter: 0x10, // TODO: Determine proper initialisation value
+            program_counter: 0x200, // Start at address 512 since early emulators were stored in RAM before that
             index_register: 0,
             stack: Vec::new(),
             delay_timer: 0,
