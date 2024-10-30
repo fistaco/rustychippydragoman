@@ -1,3 +1,5 @@
+use std::time::{Instant, SystemTime};
+
 /// The components of a CHIP8 emulator.
 pub struct Emulator {
     memory: [u8; 4096],
@@ -7,11 +9,18 @@ pub struct Emulator {
     stack: Vec<u16>,
     delay_timer: u8,
     sound_timer: u8,
-    registers: [u8; 16]
+    registers: [u8; 16],
+    instructions_per_second: u32
 }
 
-pub impl Emulator {
-    fn new(screen_width: usize, screen_height: usize, instructions_per_second: u8) -> Self {
+impl Emulator {
+    /// Initialises and returns a new CHIP-8 interpreter object.
+    ///
+    /// ## Arguments
+    /// * `screen_width` - The width of the screen in pixels.
+    /// * `screen_height` - The height of the screen in pixels.
+    /// * `instructions_per_second` - The number of instructions the interpreter will process per second.
+    fn new(screen_width: usize, screen_height: usize, instructions_per_second: u32) -> Self {
         Emulator {
             memory: [0; 4096],
             display: vec![vec![0; screen_width]; screen_height], // Access with display[row][col]
@@ -20,20 +29,33 @@ pub impl Emulator {
             stack: Vec::new(),
             delay_timer: 0,
             sound_timer: 0,
-            registers: [0; 16]
+            registers: [0; 16],
+            instructions_per_second: instructions_per_second
         }
     }
 
     fn run(&mut self, refresh_rate: u8) {
+        let instruction_interval_micros: u128 = 1e6 as u128 / self.instructions_per_second as u128;
 
+        let mut prev_time = Instant::now();
+        loop {
+            let elapsed = prev_time.elapsed();
+
+            if elapsed.as_micros() > instruction_interval_micros {
+                prev_time = Instant::now();
+
+                let instruction: u8 = self.fetch_instruction();
+                self.execute_instruction(instruction);
+            }
+        }
     }
 
     /// Fetch the instruction at the current program counter
     fn fetch_instruction(&self) -> u8 {
-        0
+        self.memory[self.program_counter as usize]
     }
 
-    fn decode_instruction(&self, instruction: u8) -> u8{
+    fn decode_instruction(&self, instruction: u8) -> u8 {
         0
     }
 
