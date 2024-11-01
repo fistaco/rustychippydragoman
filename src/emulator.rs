@@ -80,4 +80,12 @@ impl Emulator {
     fn beep(&self) {
         // TODO: Implement sound output
     }
+
+    fn clear_screen(&mut self) {
+        self.display.iter_mut().for_each(| display_columm: &mut Vec<u8> | display_columm.clear());
+    }
+
+    fn jump(&mut self, address: u16) {
+        self.program_counter = address;
+    }
 }
