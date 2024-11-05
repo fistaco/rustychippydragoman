@@ -88,4 +88,51 @@ impl Emulator {
     fn jump(&mut self, address: u16) {
         self.program_counter = address;
     }
+
+    /// Calls the subroutine at the given `address` by jumping to it after pushing the current PC to
+    /// the stack so we can return to it later.
+    fn call_subroutine(&mut self, address: u16) {
+        self.stack.push(self.program_counter);
+        self.program_counter = address;
+    }
+
+    /// Returns from a called subroutine by setting the PC to the address at the top of the stack.
+    fn return_from_subroutine(&mut self) {
+        self.program_counter = match self.stack.pop() {
+            Some(address) => address,
+            None => panic!("Attempted to return from a subroutine when the stack was empty."),
+        };
+    }
+
+    /// Skips the next instruction by incrementing the PC if the given `condition` is true.
+    fn skip_instruction_conditionally(&mut self, condition: bool) {
+        if condition {
+            self.program_counter += 1; // Assume the PC is already incremented by 1 before this
+        }
+    }
+
+    /// Skips the next instruction if the value in the given register equals the given `value`.
+    fn skip_if_register_value_equals(&mut self, register_index: usize, value: u8) {
+        self.skip_instruction_conditionally(self.registers[register_index] == value);
+    }
+
+    fn skip_if_register_value_not_equal(&mut self, register_index: usize, value: u8) {
+        self.skip_instruction_conditionally(self.registers[register_index] != value);
+    }
+
+    fn skip_if_registers_equal(&mut self, register_i: usize, register_j: usize) {
+        self.skip_instruction_conditionally(self.registers[register_i] == self.registers[register_j]);
+    }
+
+    fn skip_if_registers_not_equal(&mut self, register_i: usize, register_j: usize) {
+        self.skip_instruction_conditionally(self.registers[register_i] != self.registers[register_j]);
+    }
+
+    fn set_register(&mut self, register_index: usize, value: u8) {
+        self.registers[register_index] = value;
+    }
+
+    fn add_to_register(&mut self, register_index: usize, value: u8) {
+        self.registers[register_index] += value;
+    }
 }
